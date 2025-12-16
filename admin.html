@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Admin - New Year 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div id="loginOverlay" class="glass-panel" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:9999; text-align:center;">
+        <h2 style="color:white; margin-top:0;">Admin Access</h2>
+        <input type="password" id="adminPass" placeholder="Enter PIN Code" style="text-align:center;">
+        <button onclick="checkLogin()" class="btn-primary">Unlock</button>
+    </div>
+
+    <div id="adminPanel" style="display: none;">
+        <nav class="nav-dock">
+            <div class="menu-toggle" id="mobile-menu"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+            <ul class="nav-links">
+                <li style="color:var(--accent); font-weight:bold;">DATABASE</li>
+                <li><a href="index.html">Live Site</a></li>
+                <li><a href="#" onclick="location.reload()">Logout</a></li>
+            </ul>
+        </nav>
+
+        <div class="container" style="padding-top: 150px;">
+            <div class="admin-header" style="text-align:center; margin-bottom:40px;"><h1>Registration Data</h1></div>
+            <div id="dataPanel">
+                 <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap:wrap;">
+                    <div class="stat-card" style="padding: 15px; flex:1;"><h3>Total Families</h3><p id="totalFamilies" style="font-size: 2rem;">0</p></div>
+                    <div class="stat-card" style="padding: 15px; flex:1;"><h3>Total Guests</h3><p id="totalPeople" style="font-size: 2rem;">0</p></div>
+                    <div style="flex:1; display:flex; align-items:center; justify-content:center;"><button onclick="clearAllData()" class="btn-danger">Reset DB</button></div>
+                </div>
+                <div class="glass-panel table-responsive">
+                    <table class="glass-table" id="regTable">
+                        <thead><tr><th>Flat</th><th>Name</th><th>Adults</th><th>Kids</th><th>Date</th><th>Actions</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
