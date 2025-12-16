@@ -13,7 +13,7 @@
 html, body {
     margin: 0; padding: 0;
     font-family: var(--font-main);
-    background-color: #000; /* Black background to hide glitches */
+    background-color: #000;
     color: var(--text);
     overflow-x: hidden;
     min-height: 100vh;
@@ -22,197 +22,171 @@ html, body {
 body {
     background: var(--primary-bg);
     background-image: var(--gradient-bg);
+    /* Add padding to bottom so content isn't hidden behind the new bottom nav */
+    padding-bottom: 100px; 
 }
 
-/* --- THE "NUCLEAR" LOADER FIX --- */
-/* This ensures the loader is the ONLY thing clickable or scrollable */
-html.loading-active, body.loading-active {
-    overflow: hidden !important;
-    height: 100vh !important;
-}
-
+/* --- LOADER STYLES --- */
 #loader {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     width: 100vw; height: 100vh;
     background-color: #000000;
-    z-index: 2147483647; /* Maximum possible Z-Index */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    z-index: 999999;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
     transition: opacity 0.5s ease, visibility 0.5s;
 }
 
-/* Hides the loader when the 'loaded' class is added */
-body.loaded #loader {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
+body.loaded #loader { opacity: 0; visibility: hidden; pointer-events: none; }
+body:not(.loaded) > *:not(#loader) { opacity: 0; transition: opacity 0.5s ease; }
+body.loaded > * { opacity: 1; }
 
-/* Hides actual page content until loaded to prevent footer peeking */
-body:not(.loaded) > *:not(#loader) {
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
-
-body.loaded > * {
-    opacity: 1;
-}
-
-/* --- LOADER ANIMATION --- */
 .loader-content { text-align: center; width: auto; }
-
-.loader-text {
-    font-size: 0.8rem; letter-spacing: 8px; text-transform: uppercase; color: #555;
-    margin-bottom: 10px; opacity: 0;
-    animation: fadeIn 0.5s ease-out forwards 0.2s;
-}
-
-.loader-year {
-    font-size: 5rem; font-weight: 300; margin: 0; line-height: 1;
-    background: linear-gradient(to right, #888, #fff, #888);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    background-size: 200% auto; opacity: 0; transform: translateY(20px);
-    animation: goldShimmer 3s infinite linear, revealUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.3s;
-}
-
-.loader-line {
-    width: 0%; height: 1px; background: var(--accent); margin: 20px auto 0;
-    animation: expandLine 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.1s;
-}
+.loader-text { font-size: 0.8rem; letter-spacing: 8px; color: #555; margin-bottom: 10px; animation: fadeIn 0.5s ease-out forwards 0.2s; }
+.loader-year { font-size: 5rem; font-weight: 300; margin: 0; line-height: 1; background: linear-gradient(to right, #888, #fff, #888); -webkit-background-clip: text; color: transparent; background-size: 200% auto; animation: goldShimmer 3s infinite linear, revealUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.3s; }
+.loader-line { width: 0%; height: 1px; background: var(--accent); margin: 20px auto 0; animation: expandLine 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards 0.1s; }
 
 @keyframes expandLine { to { width: 100px; } }
 @keyframes revealUp { to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeIn { to { opacity: 1; } }
 @keyframes goldShimmer { to { background-position: 200% center; } }
 
-/* --- NAVBAR STYLES --- */
+/* --- BOTTOM DOCK NAVIGATION (The Big Change) --- */
 .nav-dock {
     position: fixed;
-    top: 30px; left: 50%; transform: translateX(-50%);
-    width: max-content; max-width: 90%;
-    background: rgba(10, 10, 20, 0.7);
-    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-    border: 1px solid var(--glass-border);
-    border-radius: 100px;
-    padding: 12px 40px;
+    bottom: 20px; /* Moves it to the bottom */
+    left: 50%; 
+    transform: translateX(-50%);
+    width: max-content; 
+    max-width: 90%;
+    
+    /* Apple/Android Dock Look */
+    background: rgba(20, 20, 30, 0.85); 
+    backdrop-filter: blur(20px); 
+    -webkit-backdrop-filter: blur(20px);
+    
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 25px; /* Pill shape */
+    padding: 10px 25px;
     z-index: 1000;
-    display: flex; align-items: center; justify-content: space-between;
+    
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
 }
 
-.menu-toggle { display: none; }
+.menu-toggle { display: none; } /* We don't need hamburger anymore with bottom dock */
 
-.nav-links { display: flex; gap: 30px; list-style: none; margin: 0; padding: 0; align-items: center; }
+.nav-links {
+    display: flex; 
+    gap: 25px; 
+    list-style: none; 
+    margin: 0; 
+    padding: 0; 
+    align-items: center;
+}
 
 .nav-links a {
-    text-decoration: none; color: rgba(255,255,255,0.6);
-    font-size: 0.9rem; font-weight: 500; transition: color 0.3s ease;
-    letter-spacing: 0.5px; position: relative; white-space: nowrap;
+    text-decoration: none; 
+    color: rgba(255,255,255,0.6);
+    font-size: 0.85rem; 
+    font-weight: 500; 
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
 }
-.nav-links a:hover, .nav-links a.active { color: white; text-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
+
+/* Hover Effect */
+.nav-links a:hover { 
+    color: white; 
+    transform: translateY(-3px); /* Pop up slightly on hover */
+}
+
+/* Active State */
+.nav-links a.active { 
+    color: var(--accent); 
+}
+
+/* Optional Dot below active link */
+.nav-links a.active::after {
+    content: ''; 
+    width: 4px; height: 4px; 
+    background: var(--accent); 
+    border-radius: 50%;
+    position: absolute;
+    bottom: -8px;
+    box-shadow: 0 0 8px var(--accent);
+}
 
 .btn-highlight {
-    background: var(--accent); color: #000 !important; padding: 10px 25px; border-radius: 50px; font-weight: 600;
+    background: var(--accent); 
+    color: #000 !important; 
+    padding: 8px 20px; 
+    border-radius: 20px; 
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
 
-/* --- MOBILE --- */
-@media (max-width: 768px) {
-    .nav-dock {
-        top: 0; left: 0; transform: none; width: 100%; border-radius: 0; border: none;
-        border-bottom: 1px solid var(--glass-border); padding: 15px 20px;
-        background: rgba(5, 5, 16, 0.95);
-    }
-    .menu-toggle { display: flex; flex-direction: column; gap: 5px; z-index: 2000; }
-    .menu-toggle .bar { width: 25px; height: 3px; background-color: white; border-radius: 3px; transition: 0.3s; }
-    
-    .menu-toggle.is-active .bar:nth-child(2) { opacity: 0; }
-    .menu-toggle.is-active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-    .menu-toggle.is-active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+.btn-highlight:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
 
-    .nav-links {
-        position: fixed; top: 0; right: -100%; height: 100vh; width: 250px;
-        background: rgba(10, 10, 20, 0.98); backdrop-filter: blur(20px);
-        flex-direction: column; justify-content: center; gap: 40px; padding-top: 60px;
-        transition: right 0.4s ease; border-left: 1px solid var(--glass-border); z-index: 1500;
+/* --- MOBILE ADJUSTMENTS --- */
+@media (max-width: 600px) {
+    .nav-dock {
+        width: 90%; /* Wider on mobile */
+        bottom: 15px;
+        padding: 12px 15px;
+        justify-content: space-around;
     }
-    .nav-links.nav-active { right: 0; }
-    .loader-year { font-size: 3.5rem; }
-    .hero h1 { font-size: 2.5rem; }
+    
+    .nav-links {
+        gap: 0; /* Let justify-content handle spacing */
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .nav-links a {
+        font-size: 0.75rem; /* Smaller text on mobile */
+    }
+    
+    .btn-highlight {
+        padding: 6px 15px;
+        font-size: 0.75rem;
+    }
 }
 
 /* --- SECTIONS --- */
-.hero { min-height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; padding-top: 80px; }
+.hero { min-height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; padding-top: 50px; }
 .gold-text { color: var(--accent); }
 .hero-badge { border: 1px solid rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.7); display: inline-block; }
-.container { max-width: 1000px; margin: 0 auto; padding: 100px 20px; }
+.container { max-width: 1000px; margin: 0 auto; padding: 50px 20px 120px 20px; /* Extra bottom padding for dock */ }
 .section-title { font-size: 2rem; text-align: center; margin-bottom: 60px; font-weight: 300; letter-spacing: 2px; }
 
-/* --- GLASS UI --- */
+/* --- CARDS & UI --- */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; align-items: stretch; }
+.stat-card {
+    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+    border: 1px solid var(--glass-border); padding: 30px; border-radius: 15px; text-align: center;
+}
 .glass-panel { background: var(--glass-bg); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
-.stat-card { background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); border: 1px solid var(--glass-border); padding: 30px; border-radius: 15px; text-align: center; }
-.stat-card p { font-size: 3rem; color: var(--accent); margin: 10px 0 0 0; font-weight: 300; }
 
 input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border); padding: 15px; border-radius: 10px; color: white; margin-bottom: 15px; box-sizing: border-box; }
 .btn-primary, .btn-danger { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-weight: 600; }
 .btn-primary { background: var(--accent); color: #000; }
 .btn-danger { background: rgba(255, 50, 50, 0.2); color: #ff5555; }
-.table-responsive { overflow-x: auto; }
-.glass-table { width: 100%; border-collapse: collapse; color: #ddd; min-width: 600px; }
-.glass-table th, .glass-table td { padding: 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
-/* --- EXISTING CSS ABOVE ... --- */
 
-/* --- NEW: FLIP CARD STYLES (COMPETITION ONLY) --- */
-.flip-card {
-    background-color: transparent;
-    perspective: 1000px; /* Essential for 3D effect */
-    height: 420px; /* Fixed height ensures front and back match */
-}
+/* --- SCHEDULE STYLES --- */
+.schedule-list { list-style: none; padding: 0; margin: 0; }
+.schedule-item { display: grid; grid-template-columns: auto 1fr; gap: 20px; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); align-items: center; }
+.schedule-time { color: var(--accent); font-weight: 600; font-size: 1.1rem; white-space: nowrap; }
+.schedule-event { color: #ddd; text-align: right; font-size: 1rem; line-height: 1.4; }
 
-.flip-card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy professional flip */
-    transform-style: preserve-3d;
-}
-
-/* Class added by JS to trigger flip */
-.flip-card.flipped .flip-card-inner {
-    transform: rotateY(180deg);
-}
-
-/* Common style for Front and Back */
-.flip-card-front, .flip-card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-backface-visibility: hidden; /* Safari */
-    backface-visibility: hidden;
-    border-radius: 15px;
-    
-    /* Using your existing stat-card look */
-    background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-    border: 1px solid var(--glass-border);
-    padding: 30px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Specifics for Front */
-.flip-card-front {
-    z-index: 2;
-}
-
-/* Specifics for Back */
-.flip-card-back {
-    transform: rotateY(180deg);
-    background: linear-gradient(145deg, #0f0f1a, #050510); /* Slightly darker bg for inputs */
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
+@media (max-width: 480px) {
+    .schedule-item { gap: 15px; padding: 15px 0; }
+    .schedule-time { font-size: 0.95rem; }
+    .schedule-event { font-size: 0.9rem; }
 }
