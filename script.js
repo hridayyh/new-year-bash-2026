@@ -30,10 +30,15 @@ window.addEventListener('load', () => {
         return;
     }
 
-    if (!sessionStorage.getItem(SESSION_KEY)) {
+    // Only show loader on very first visit, skip on navigation
+    const isFirstVisit = !sessionStorage.getItem(SESSION_KEY);
+    if (isFirstVisit) {
         handleLoader(true);
     } else {
-        handleLoader(false);
+        // Instant load - no loader animation
+        document.body.classList.add('loaded');
+        const loader = document.getElementById('loader');
+        if (loader) loader.style.display = 'none';
     }
 
     renderNavigation();
@@ -46,6 +51,7 @@ window.addEventListener('load', () => {
     initCardEffects();
     initFloatingParticles();
     initButtonEffects();
+    initCarousel();
 });
 
 // --- BACK BUTTON FIX ---
@@ -130,11 +136,11 @@ function renderNavigation() {
             if (item.link === currentPage) a.classList.add('active');
             if (item.isButton) a.className = 'btn-highlight';
 
+            // Instant navigation - no fade animation
             a.addEventListener('click', function (e) {
                 if (e.ctrlKey || e.metaKey) return;
                 e.preventDefault();
-                document.body.classList.add('exiting');
-                setTimeout(() => { window.location.href = item.link; }, 500);
+                window.location.href = item.link;
             });
 
             li.appendChild(a);
@@ -327,43 +333,8 @@ function initSnow() {
 }
 
 function initChristmasDecor() {
-    const path = window.location.pathname;
-    const isHome = path.includes('index.html') || path.endsWith('/') || path.endsWith('NewYear2026/');
-    if (!isHome) return;
-
-    function createSwag(bulbCount) {
-        const swag = document.createElement('div');
-        swag.className = 'light-swag';
-        const isMobile = window.innerWidth < 600;
-        const heightDepth = isMobile ? 60 : 90;
-
-        for (let i = 0; i < bulbCount; i++) {
-            const bulb = document.createElement('div');
-            bulb.className = 'bulb';
-            const x = (i + 0.5) / bulbCount;
-            const leftPercent = x * 100;
-            const yPixels = (4 * heightDepth * (x - (x * x))) * 0.98;
-            bulb.style.left = `${leftPercent}%`;
-            bulb.style.top = `${yPixels}px`;
-            swag.appendChild(bulb);
-        }
-        return swag;
-    }
-
-    const loader = document.getElementById('loader');
-    if (loader) {
-        const loaderContainer = document.createElement('div');
-        loaderContainer.className = 'christmas-lights-container';
-        loaderContainer.appendChild(createSwag(5));
-        loaderContainer.appendChild(createSwag(5));
-        loader.appendChild(loaderContainer);
-    }
-
-    const bodyLights = document.createElement('div');
-    bodyLights.className = 'christmas-lights-container';
-    bodyLights.appendChild(createSwag(10));
-    bodyLights.appendChild(createSwag(10));
-    document.body.appendChild(bodyLights);
+    // Lights disabled
+    return;
 }
 
 // --- REGISTRATION LOGIC ---
@@ -373,25 +344,50 @@ function initRegistration() {
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const name = document.getElementById('name').value;
+
+        const name = document.getElementById('name').value.trim();
         const adults = document.getElementById('adults').value;
         const kids = document.getElementById('kids').value;
+
+        if (!name) {
+            alert('Please enter a valid name');
+            return;
+        }
 
         const newEntry = {
             id: Date.now(),
             name,
-            adults,
-            kids,
+            adults: parseInt(adults) || 0,
+            kids: parseInt(kids) || 0,
             date: new Date().toLocaleString()
         };
 
-        const existingData = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-        existingData.push(newEntry);
-        localStorage.setItem(DB_KEY, JSON.stringify(existingData));
+        try {
+            // Get existing data
+            let existingData = [];
+            const storedData = localStorage.getItem(DB_KEY);
+            if (storedData) {
+                existingData = JSON.parse(storedData);
+            }
 
-        // Enhanced success feedback
-        showSuccessMessage();
-        form.reset();
+            // Add new entry
+            existingData.push(newEntry);
+
+            // Save to localStorage
+            localStorage.setItem(DB_KEY, JSON.stringify(existingData));
+
+            // Verify it was saved
+            const verification = localStorage.getItem(DB_KEY);
+            if (verification) {
+                showSuccessMessage();
+                form.reset();
+            } else {
+                alert('Error saving data. Please try again.');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            alert('Error saving registration. Please try again.');
+        }
     });
 }
 
@@ -630,3 +626,178 @@ shakeStyle.textContent = `
     }
 `;
 document.head.appendChild(shakeStyle);
+
+// --- PREMIUM 3D CAROUSEL ---
+function initCarousel() {
+    const slides = document.querySelectorAll('.carousel-3d-slide');
+    const dots = document.querySelectorAll('.carousel-3d-dot');
+    const prevBtn = document.querySelector('.carousel-3d-prev');
+    const nextBtn = document.querySelector('.carousel-3d-next');
+    const counterCurrent = document.querySelector('.carousel-3d-counter .current');
+    const gallerySection = document.querySelector('.gallery-section');
+
+    if (!slides.length) return;
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+    const SLIDE_DURATION = 4000; // 4 seconds
+    let autoSlideInterval;
+    let isPaused = false;
+
+    // Position names for 5 slides: left2, left1, center, right1, right2
+    const positions = ['left2', 'left1', 'center', 'right1', 'right2'];
+
+    function updateSlidePositions() {
+        slides.forEach((slide, index) => {
+            // Calculate relative position from current center
+            let relativePos = index - currentIndex;
+
+            // Wrap around for infinite loop effect
+            if (relativePos > 2) relativePos -= totalSlides;
+            if (relativePos < -2) relativePos += totalSlides;
+
+            // Map relative position to position name
+            let positionName = 'hidden';
+            if (relativePos === -2) positionName = 'left2';
+            else if (relativePos === -1) positionName = 'left1';
+            else if (relativePos === 0) positionName = 'center';
+            else if (relativePos === 1) positionName = 'right1';
+            else if (relativePos === 2) positionName = 'right2';
+
+            slide.setAttribute('data-position', positionName);
+        });
+
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+
+        // Update counter
+        if (counterCurrent) {
+            counterCurrent.textContent = String(currentIndex + 1).padStart(2, '0');
+        }
+    }
+
+    function goToSlide(index) {
+        currentIndex = (index + totalSlides) % totalSlides;
+        updateSlidePositions();
+        restartAutoSlide();
+    }
+
+    function nextSlide() {
+        goToSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+        goToSlide(currentIndex - 1);
+    }
+
+    function startAutoSlide() {
+        stopAutoSlide();
+        autoSlideInterval = setInterval(() => {
+            if (!isPaused) {
+                nextSlide();
+            }
+        }, SLIDE_DURATION);
+    }
+
+    function stopAutoSlide() {
+        if (autoSlideInterval) {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = null;
+        }
+    }
+
+    function restartAutoSlide() {
+        stopAutoSlide();
+        startAutoSlide();
+    }
+
+    // Event listeners
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+        });
+    }
+
+    // Dot click handlers
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            goToSlide(index);
+        });
+    });
+
+    // Slide click handler (click on side slides to navigate)
+    slides.forEach((slide, index) => {
+        slide.addEventListener('click', () => {
+            const position = slide.getAttribute('data-position');
+            if (position === 'left1' || position === 'left2') {
+                prevSlide();
+            } else if (position === 'right1' || position === 'right2') {
+                nextSlide();
+            }
+        });
+    });
+
+    // Pause on hover
+    const carousel = document.querySelector('.carousel-3d');
+    if (carousel) {
+        carousel.addEventListener('mouseenter', () => {
+            isPaused = true;
+        });
+        carousel.addEventListener('mouseleave', () => {
+            isPaused = false;
+        });
+    }
+
+    // Touch/swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    if (carousel) {
+        carousel.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            isPaused = true;
+        }, { passive: true });
+
+        carousel.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            isPaused = false;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        });
+    }
+
+    // Scroll reveal animation
+    if (gallerySection) {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -100px 0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        observer.observe(gallerySection);
+    }
+
+    // Initialize
+    updateSlidePositions();
+    startAutoSlide();
+}
