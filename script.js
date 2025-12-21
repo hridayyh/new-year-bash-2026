@@ -1,12 +1,13 @@
 // --- 1. IMMEDIATE SESSION CHECK ---
 const SESSION_KEY = 'nye_intro_shown';
+const NOTICE_KEY = 'nye_notice_seen';
 if (sessionStorage.getItem(SESSION_KEY)) {
     document.body.classList.add('loaded');
 }
 
 // --- 2. CONFIGURATION ---
-const PIN_CODE = "2004"; 
-const DB_KEY = "nye_registrations"; 
+const PIN_CODE = "2004";
+const DB_KEY = "nye_registrations";
 
 // --- 3. NAVIGATION SETUP ---
 const NAV_MENU = [
@@ -19,22 +20,32 @@ const NAV_MENU = [
 
 // --- 4. MAIN INITIALIZATION ---
 window.addEventListener('load', () => {
-    if (!sessionStorage.getItem(SESSION_KEY)) {
-        handleLoader(true); 
-    } else {
-        handleLoader(false); 
-        setTimeout(initWarningModal, 500);
+    // Check if user has seen the notice page first (except on note.html itself)
+    const isNotePage = window.location.pathname.includes('note.html');
+    const isAdminPage = window.location.pathname.includes('admin.html');
+
+    if (!isNotePage && !isAdminPage && !sessionStorage.getItem(NOTICE_KEY)) {
+        // Redirect to notice page first
+        window.location.href = 'note.html';
+        return;
     }
-    
-    renderNavigation(); 
+
+    if (!sessionStorage.getItem(SESSION_KEY)) {
+        handleLoader(true);
+    } else {
+        handleLoader(false);
+    }
+
+    renderNavigation();
     initCountdown();
-    initSnow(); 
-    initChristmasDecor(); 
+    initSnow();
+    initChristmasDecor();
     initRegistration();
     initAdmin();
     initScrollReveal();
     initCardEffects();
     initFloatingParticles();
+    initButtonEffects();
 });
 
 // --- BACK BUTTON FIX ---
@@ -50,85 +61,63 @@ window.addEventListener('pageshow', (event) => {
 
 function handleLoader(shouldAnimate) {
     const loader = document.getElementById('loader');
-    if(!loader) return;
-    
+    if (!loader) return;
+
     if (shouldAnimate) {
+        // Extended to 4 seconds as requested
         setTimeout(() => {
             document.body.classList.add('loaded');
             sessionStorage.setItem(SESSION_KEY, 'true');
-            initWarningModal();
-        }, 1200);
+        }, 4000);
     } else {
         document.body.classList.add('loaded');
     }
 }
 
-// --- PROFESSIONAL WARNING MODAL ---
-function initWarningModal() {
-    // FIX: Check if warning was already shown this session
-    if (sessionStorage.getItem('nye_warning_shown')) return;
+// --- PROFESSIONAL BUTTON EFFECTS ---
+function initButtonEffects() {
+    // Add ripple effect to all buttons
+    const buttons = document.querySelectorAll('.btn-primary, .btn-highlight, .btn-danger, button[type="submit"]');
 
-    if (document.getElementById('warning-overlay')) return;
+    buttons.forEach(button => {
+        button.addEventListener('click', function (e) {
+            // Create ripple element
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple-effect');
 
-    const overlay = document.createElement('div');
-    overlay.id = 'warning-overlay';
-    
-    overlay.innerHTML = `
-        <div class="warning-card">
-            <div class="close-btn-container">
-                <button id="warningCloseBtn" disabled>4</button>
-            </div>
-            
-            <div class="warning-title">NOTE</div>
-            
-            <div class="warning-body">
-                This event is only for the residents of 
-                <br>
-                <span class="highlight-gold">DWARAKA COMPOUND</span>.
-                <br><br>
-                <span class="highlight-red">Outsiders do not have permission to enter or register.</span>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.clientX - rect.left - size / 2;
+            const y = e.clientY - rect.top - size / 2;
 
-    // FIX: Mark as shown so it doesn't appear again on navigation
-    sessionStorage.setItem('nye_warning_shown', 'true');
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
 
-    requestAnimationFrame(() => {
-        overlay.classList.add('active');
+            this.appendChild(ripple);
+
+            setTimeout(() => ripple.remove(), 600);
+        });
     });
 
-    const closeBtn = document.getElementById('warningCloseBtn');
-    let timeLeft = 4;
-    
-    const timer = setInterval(() => {
-        timeLeft--;
-        if (timeLeft > 0) {
-            closeBtn.innerText = timeLeft;
-        } else {
-            clearInterval(timer);
-            closeBtn.innerText = "✕";
-            closeBtn.disabled = false;
-            closeBtn.classList.add('active');
-        }
-    }, 1000);
-
-    closeBtn.addEventListener('click', () => {
-        overlay.classList.remove('active');
-        setTimeout(() => {
-            overlay.remove();
-        }, 500);
+    // Add smooth focus states
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function () {
+            this.parentElement?.classList.add('input-focused');
+        });
+        input.addEventListener('blur', function () {
+            this.parentElement?.classList.remove('input-focused');
+        });
     });
 }
 
 function renderNavigation() {
-    if(window.location.pathname.includes('admin.html') && document.getElementById('adminPanel').style.display === 'none') return;
+    if (window.location.pathname.includes('admin.html') && document.getElementById('adminPanel').style.display === 'none') return;
 
-    const navLists = document.querySelectorAll('.nav-links'); 
+    const navLists = document.querySelectorAll('.nav-links');
     navLists.forEach(ul => {
-        ul.innerHTML = ''; 
+        ul.innerHTML = '';
         const path = window.location.pathname;
         const currentPage = path.split("/").pop() || 'index.html';
 
@@ -137,15 +126,15 @@ function renderNavigation() {
             const a = document.createElement('a');
             a.href = item.link;
             a.textContent = item.text;
-            
-            if(item.link === currentPage) a.classList.add('active');
+
+            if (item.link === currentPage) a.classList.add('active');
             if (item.isButton) a.className = 'btn-highlight';
 
-            a.addEventListener('click', function(e) {
+            a.addEventListener('click', function (e) {
                 if (e.ctrlKey || e.metaKey) return;
-                e.preventDefault(); 
+                e.preventDefault();
                 document.body.classList.add('exiting');
-                setTimeout(() => { window.location.href = item.link; }, 500); 
+                setTimeout(() => { window.location.href = item.link; }, 500);
             });
 
             li.appendChild(a);
@@ -158,7 +147,7 @@ function renderNavigation() {
 function initCountdown() {
     const countdownEl = document.getElementById('countdown');
     if (!countdownEl) return;
-    
+
     // Restructure countdown with new design
     countdownEl.innerHTML = `
         <div class="countdown-item">
@@ -182,46 +171,46 @@ function initCountdown() {
             <span class="countdown-label">Minutes</span>
         </div>
     `;
-    
+
     const TARGET_DATE = new Date("Jan 1, 2026 00:00:00").getTime();
-    
+
     function updateCountdown() {
         const now = new Date().getTime();
         const distance = TARGET_DATE - now;
-        
-        if(distance < 0) return;
-        
+
+        if (distance < 0) return;
+
         const d = Math.floor(distance / (1000 * 60 * 60 * 24));
         const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        
+
         const daysEl = document.getElementById("days");
         const hoursEl = document.getElementById("hours");
         const minutesEl = document.getElementById("minutes");
-        
-        if(daysEl) {
-            const newDays = d < 10 ? "0"+d : d;
-            if(daysEl.innerText !== String(newDays)) {
+
+        if (daysEl) {
+            const newDays = d < 10 ? "0" + d : d;
+            if (daysEl.innerText !== String(newDays)) {
                 daysEl.innerText = newDays;
                 animateNumber(daysEl);
             }
         }
-        if(hoursEl) {
-            const newHours = h < 10 ? "0"+h : h;
-            if(hoursEl.innerText !== String(newHours)) {
+        if (hoursEl) {
+            const newHours = h < 10 ? "0" + h : h;
+            if (hoursEl.innerText !== String(newHours)) {
                 hoursEl.innerText = newHours;
                 animateNumber(hoursEl);
             }
         }
-        if(minutesEl) {
-            const newMins = m < 10 ? "0"+m : m;
-            if(minutesEl.innerText !== String(newMins)) {
+        if (minutesEl) {
+            const newMins = m < 10 ? "0" + m : m;
+            if (minutesEl.innerText !== String(newMins)) {
                 minutesEl.innerText = newMins;
                 animateNumber(minutesEl);
             }
         }
     }
-    
+
     function animateNumber(el) {
         el.style.transform = 'scale(1.2)';
         el.style.textShadow = '0 0 30px rgba(212, 175, 55, 0.8)';
@@ -230,7 +219,7 @@ function initCountdown() {
             el.style.textShadow = '0 0 20px rgba(255, 255, 255, 0.5)';
         }, 200);
     }
-    
+
     updateCountdown();
     setInterval(updateCountdown, 1000);
 }
@@ -238,21 +227,21 @@ function initCountdown() {
 // --- SCROLL REVEAL ANIMATIONS ---
 function initScrollReveal() {
     const revealElements = document.querySelectorAll('.stat-card, .glass-panel, .schedule-item, .section-title');
-    
+
     if (!revealElements.length) return;
-    
+
     // Add reveal class to elements
     revealElements.forEach((el, index) => {
         el.classList.add('reveal');
         el.classList.add(`reveal-delay-${(index % 4) + 1}`);
     });
-    
+
     const observerOptions = {
         root: null,
         rootMargin: '0px 0px -50px 0px',
         threshold: 0.1
     };
-    
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -261,24 +250,24 @@ function initScrollReveal() {
             }
         });
     }, observerOptions);
-    
+
     revealElements.forEach(el => observer.observe(el));
 }
 
 // --- CARD HOVER EFFECTS ---
 function initCardEffects() {
     const cards = document.querySelectorAll('.stat-card');
-    
+
     cards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = ((e.clientX - rect.left) / rect.width) * 100;
             const y = ((e.clientY - rect.top) / rect.height) * 100;
-            
+
             card.style.setProperty('--mouse-x', `${x}%`);
             card.style.setProperty('--mouse-y', `${y}%`);
         });
-        
+
         card.addEventListener('mouseleave', () => {
             card.style.setProperty('--mouse-x', '50%');
             card.style.setProperty('--mouse-y', '50%');
@@ -291,16 +280,17 @@ function initFloatingParticles() {
     const path = window.location.pathname;
     const isHome = path.includes('index.html') || path.endsWith('/') || path.endsWith('NewYear2026/');
     if (!isHome) return;
-    
-    const particleCount = 8;
-    
+
+    const particleCount = 6; // Reduced for better performance
+
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.className = 'floating-particle';
-        particle.style.left = `${Math.random() * 100}%`;
+        // Keep within 95% to prevent overflow
+        particle.style.left = `${Math.random() * 90 + 2}%`;
         particle.style.animationDelay = `${Math.random() * 15}s`;
-        particle.style.animationDuration = `${15 + Math.random() * 10}s`;
-        particle.style.width = `${3 + Math.random() * 4}px`;
+        particle.style.animationDuration = `${18 + Math.random() * 10}s`;
+        particle.style.width = `${2 + Math.random() * 3}px`;
         particle.style.height = particle.style.width;
         document.body.appendChild(particle);
     }
@@ -317,19 +307,20 @@ function initSnow() {
     container.id = 'snow-container';
     document.body.appendChild(container);
 
-    const flakeCount = 20;
-    const symbols = ['❄', '❅', '❆', '•']; 
+    const flakeCount = 16; // Reduced for better performance
+    const symbols = ['❄', '❅', '❆', '•'];
 
     for (let i = 0; i < flakeCount; i++) {
         const flake = document.createElement('div');
         flake.classList.add('snowflake');
         flake.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-        const size = Math.random() * 15 + 10;
+        const size = Math.random() * 12 + 8;
         flake.style.fontSize = `${size}px`;
-        flake.style.left = Math.random() * 100 + 'vw'; 
-        flake.style.opacity = Math.random() * 0.5 + 0.3; 
-        const duration = Math.random() * 10 + 12; 
-        const delay = Math.random() * 10; 
+        // Use percentage instead of vw to prevent horizontal scroll
+        flake.style.left = (Math.random() * 95) + '%';
+        flake.style.opacity = Math.random() * 0.4 + 0.2;
+        const duration = Math.random() * 10 + 15;
+        const delay = Math.random() * 10;
         flake.style.animation = `fall ${duration}s linear ${delay}s infinite`;
         container.appendChild(flake);
     }
@@ -338,22 +329,22 @@ function initSnow() {
 function initChristmasDecor() {
     const path = window.location.pathname;
     const isHome = path.includes('index.html') || path.endsWith('/') || path.endsWith('NewYear2026/');
-    if (!isHome) return; 
+    if (!isHome) return;
 
     function createSwag(bulbCount) {
         const swag = document.createElement('div');
         swag.className = 'light-swag';
         const isMobile = window.innerWidth < 600;
-        const heightDepth = isMobile ? 60 : 90; 
-        
+        const heightDepth = isMobile ? 60 : 90;
+
         for (let i = 0; i < bulbCount; i++) {
             const bulb = document.createElement('div');
             bulb.className = 'bulb';
-            const x = (i + 0.5) / bulbCount; 
+            const x = (i + 0.5) / bulbCount;
             const leftPercent = x * 100;
-            const yPixels = (4 * heightDepth * (x - (x * x))) * 0.98; 
+            const yPixels = (4 * heightDepth * (x - (x * x))) * 0.98;
             bulb.style.left = `${leftPercent}%`;
-            bulb.style.top = `${yPixels}px`; 
+            bulb.style.top = `${yPixels}px`;
             swag.appendChild(bulb);
         }
         return swag;
@@ -363,15 +354,15 @@ function initChristmasDecor() {
     if (loader) {
         const loaderContainer = document.createElement('div');
         loaderContainer.className = 'christmas-lights-container';
-        loaderContainer.appendChild(createSwag(5)); 
-        loaderContainer.appendChild(createSwag(5)); 
+        loaderContainer.appendChild(createSwag(5));
+        loaderContainer.appendChild(createSwag(5));
         loader.appendChild(loaderContainer);
     }
 
     const bodyLights = document.createElement('div');
     bodyLights.className = 'christmas-lights-container';
-    bodyLights.appendChild(createSwag(10)); 
-    bodyLights.appendChild(createSwag(10)); 
+    bodyLights.appendChild(createSwag(10));
+    bodyLights.appendChild(createSwag(10));
     document.body.appendChild(bodyLights);
 }
 
@@ -397,7 +388,7 @@ function initRegistration() {
         const existingData = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
         existingData.push(newEntry);
         localStorage.setItem(DB_KEY, JSON.stringify(existingData));
-        
+
         // Enhanced success feedback
         showSuccessMessage();
         form.reset();
@@ -420,7 +411,7 @@ function showSuccessMessage() {
         backdrop-filter: blur(10px);
         animation: fadeIn 0.3s ease;
     `;
-    
+
     overlay.innerHTML = `
         <div style="
             background: rgba(25, 25, 35, 0.9);
@@ -454,7 +445,7 @@ function showSuccessMessage() {
             </button>
         </div>
     `;
-    
+
     // Add inline animations
     const style = document.createElement('style');
     style.textContent = `
@@ -462,9 +453,9 @@ function showSuccessMessage() {
         @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     `;
     overlay.appendChild(style);
-    
+
     document.body.appendChild(overlay);
-    
+
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) overlay.remove();
     });
@@ -484,18 +475,36 @@ function checkLogin() {
         sessionStorage.setItem('admin_logged_in', 'true');
         showAdminPanel();
     } else {
-        // Enhanced error feedback
+        // Enhanced error feedback with redirect
         const passInput = document.getElementById('adminPass');
+        const loginOverlay = document.getElementById('loginOverlay');
+
         passInput.style.borderColor = '#ff4444';
         passInput.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.3)';
         passInput.style.animation = 'shake 0.5s ease';
-        
+
+        // Show error message
+        let errorMsg = document.getElementById('loginError');
+        if (!errorMsg) {
+            errorMsg = document.createElement('p');
+            errorMsg.id = 'loginError';
+            errorMsg.style.cssText = 'color: #ff5555; font-size: 0.85rem; margin-top: 15px; animation: fadeIn 0.3s ease;';
+            passInput.parentElement.appendChild(errorMsg);
+        }
+        errorMsg.innerHTML = '<i class="fas fa-exclamation-circle" style="margin-right: 5px;"></i>Wrong password! Redirecting...';
+
         setTimeout(() => {
             passInput.style.borderColor = '';
             passInput.style.boxShadow = '';
             passInput.style.animation = '';
             passInput.value = '';
-        }, 500);
+
+            // Redirect to welcome page after wrong password
+            document.body.classList.add('exiting');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 500);
+        }, 1500);
     }
 }
 
@@ -513,7 +522,7 @@ function loadAdminData() {
     const tbody = document.querySelector('#regTable tbody');
     let totalFam = data.length;
     let totalPpl = 0;
-    
+
     tbody.innerHTML = '';
 
     data.forEach((entry, index) => {
@@ -535,10 +544,10 @@ function loadAdminData() {
         tbody.innerHTML += row;
     });
 
-    if(document.getElementById('totalFamilies')) {
+    if (document.getElementById('totalFamilies')) {
         animateCounter('totalFamilies', totalFam);
     }
-    if(document.getElementById('totalPeople')) {
+    if (document.getElementById('totalPeople')) {
         animateCounter('totalPeople', totalPpl);
     }
 }
@@ -548,27 +557,27 @@ function animateCounter(elementId, targetValue) {
     const duration = 1000;
     const start = parseInt(el.innerText) || 0;
     const startTime = performance.now();
-    
+
     function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         // Easing function for smooth animation
         const easeOut = 1 - Math.pow(1 - progress, 3);
         const current = Math.floor(start + (targetValue - start) * easeOut);
-        
+
         el.innerText = current;
-        
+
         if (progress < 1) {
             requestAnimationFrame(update);
         }
     }
-    
+
     requestAnimationFrame(update);
 }
 
 function deleteEntry(index) {
-    if(!confirm('Delete this entry?')) return;
+    if (!confirm('Delete this entry?')) return;
     const data = JSON.parse(localStorage.getItem(DB_KEY) || '[]');
     data.splice(index, 1);
     localStorage.setItem(DB_KEY, JSON.stringify(data));
@@ -579,7 +588,7 @@ function clearAllData() {
     if (confirm('WARNING: This will delete ALL registrations. Are you sure?')) {
         localStorage.removeItem(DB_KEY);
         loadAdminData();
-        
+
         // Show confirmation
         const toast = document.createElement('div');
         toast.style.cssText = `
@@ -597,13 +606,13 @@ function clearAllData() {
             animation: fadeIn 0.3s ease, fadeOut 0.3s ease 2s forwards;
         `;
         toast.innerHTML = '<i class="fas fa-check" style="color: #d4af37; margin-right: 10px;"></i>Database cleared successfully';
-        
+
         const style = document.createElement('style');
         style.textContent = `
             @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; visibility: hidden; } }
         `;
         toast.appendChild(style);
-        
+
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 2500);
     }
