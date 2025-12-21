@@ -53,7 +53,49 @@
 
             <div id="countdown" style="margin-top: 40px;"></div>
 
-            <div style="margin-top: 50px;">
+            <!-- 3D Gallery Carousel - Inside Hero -->
+            <div id="gallery" class="gallery-inline">
+                <div class="carousel-3d">
+                    <div class="carousel-3d-track">
+                        <div class="carousel-3d-slide" data-index="0">
+                            <img src="gallery1.jpg" alt="Rangoli Art 1">
+                        </div>
+                        <div class="carousel-3d-slide" data-index="1">
+                            <img src="gallery2.jpg" alt="Rangoli Art 2">
+                        </div>
+                        <div class="carousel-3d-slide" data-index="2">
+                            <img src="gallery3.jpg" alt="Rangoli Art 3">
+                        </div>
+                        <div class="carousel-3d-slide" data-index="3">
+                            <img src="gallery4.jpg" alt="Rangoli Art 4">
+                        </div>
+                        <div class="carousel-3d-slide" data-index="4">
+                            <img src="gallery5.jpg" alt="Rangoli Art 5">
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <button class="carousel-3d-btn carousel-3d-prev" aria-label="Previous">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="carousel-3d-btn carousel-3d-next" aria-label="Next">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- Indicators -->
+                <div class="carousel-3d-indicators">
+                    <div class="carousel-3d-dots">
+                        <span class="carousel-3d-dot active"></span>
+                        <span class="carousel-3d-dot"></span>
+                        <span class="carousel-3d-dot"></span>
+                        <span class="carousel-3d-dot"></span>
+                        <span class="carousel-3d-dot"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
                 <a href="register.html" class="btn-highlight"
                     style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px;">
                     <i class="fas fa-user-plus"></i>
@@ -63,10 +105,16 @@
         </div>
     </section>
 
-    <footer
-        style="text-align: center; padding: 40px; color: rgba(255,255,255,0.25); font-size: 0.8rem; padding-bottom: 100px;">
-        <p>&copy; 2026 Celebration Committee | <a href="admin.html"
-                style="color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.3s;">Admin</a></p>
+    <footer class="site-footer">
+        <p>&copy; 2026 Celebration Committee | <a href="admin.html" class="footer-link">Admin</a></p>
+        <div class="developer-credit">
+            <span>Developed by</span>
+            <a href="https://www.linkedin.com/in/hriday-s-kumar-ab62a5256" target="_blank" rel="noopener noreferrer"
+                class="developer-link">
+                Hriday S Kumar
+                <i class="fab fa-linkedin"></i>
+            </a>
+        </div>
     </footer>
 
     <script src="script.js"></script>
