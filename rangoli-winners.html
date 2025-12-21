@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Rangoli Competition Winners - New Year Celebration 2026">
+    <title>Rangoli Winners - New Year 2026</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .winners-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .trophy-icon {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .winners-title {
+            font-size: clamp(2rem, 6vw, 3rem);
+            font-weight: 300;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .winners-title span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .event-name {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px 50px;
+            max-width: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .status-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        .status-title {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .status-message {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        /* Winner display styles (for when results are announced) */
+        .winner-list {
+            display: none;
+            /* Hidden until results */
+        }
+
+        .winner-item {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 16px;
+            padding: 20px 30px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .winner-rank {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .winner-name {
+            font-size: 1.2rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            top: -20px;
+            animation: confettiFall 5s linear infinite;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-line"></div>
+            <div class="loader-text">RANGOLI WINNERS</div>
+            <h1 class="loader-year">2026</h1>
+        </div>
+    </div>
+
+    <nav class="nav-dock">
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </div>
+        <ul class="nav-links"></ul>
+    </nav>
+
+    <div class="confetti" id="confetti"></div>
+
+    <div class="winners-container">
+        <i class="fas fa-trophy trophy-icon"></i>
+        <h1 class="winners-title">Rangoli <span>Winners</span></h1>
+        <p class="event-name">New Year Celebration 2026</p>
+
+        <!-- Status Card - Judgement in Progress -->
+        <div class="status-card">
+            <div class="status-icon">⏳</div>
+            <h2 class="status-title">Judgement in Process</h2>
+            <p class="status-message">
+                Our judges are carefully evaluating all the beautiful rangoli creations.
+                Winners will be announced soon. Stay tuned!
+            </p>
+            <a href="competitions.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Competitions
+            </a>
+        </div>
+
+        <!-- Winner List (Hidden until results - uncomment when ready) -->
+        <!--
+        <div class="winner-list" style="display: block; width: 100%; max-width: 500px;">
+            <div class="winner-item">
+                <div class="winner-rank">1st</div>
+                <div class="winner-name">Winner Name Here</div>
+            </div>
+            <div class="winner-item">
+                <div class="winner-rank">2nd</div>
+                <div class="winner-name">Second Place Name</div>
+            </div>
+            <div class="winner-item">
+                <div class="winner-rank">3rd</div>
+                <div class="winner-name">Third Place Name</div>
+            </div>
+        </div>
+        -->
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Add confetti animation when winners are announced
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confetti');
+            const colors = ['#d4af37', '#ffffff', '#ff6b6b', '#4ecdc4', '#45b7d1'];
+
+            for (let i = 0; i < 50; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.animationDelay = Math.random() * 5 + 's';
+                piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confettiContainer.appendChild(piece);
+            }
+        }
+
+        // Uncomment this when winners are announced
+        // createConfetti();
+    </script>
+</body>
+
+</html>
