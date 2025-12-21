@@ -1,66 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule - New Year Bash</title>
+    <meta name="description"
+        content="Complete schedule for the New Year's Eve celebration - December 31st event timeline">
+    <title>Schedule - New Year Bash 2026</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        /* --- SCHEDULE SPECIFIC STYLES --- */
-        .schedule-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .schedule-item {
-            display: grid;
-            /* Column 1: Time (Auto width but keeps it together), Column 2: Event (Takes remaining space) */
-            grid-template-columns: auto 1fr;
-            gap: 20px;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            align-items: center; /* Vertically center everything */
-        }
-
-        .schedule-time {
-            color: var(--accent);
-            font-weight: 600;
-            font-size: 1.1rem;
-            white-space: nowrap; /* Prevents "6:00 PM" from breaking into two lines */
-        }
-
-        .schedule-event {
-            color: #ddd;
-            text-align: right; /* Aligns text to the right side */
-            font-size: 1rem;
-            line-height: 1.4;
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 480px) {
-            .schedule-item {
-                gap: 15px; 
-                padding: 15px 0;
-            }
-            .schedule-time {
-                font-size: 0.95rem;
-            }
-            .schedule-event {
-                font-size: 0.9rem;
-            }
-        }
-    </style>
 </head>
+
 <body>
     <div id="loader">
         <div class="loader-content">
             <div class="loader-line"></div>
             <div class="loader-text">SCHEDULE</div>
-            <h1 class="loader-year"></h1>
+            <h1 class="loader-year">2026</h1>
         </div>
     </div>
 
@@ -71,48 +29,81 @@
         <ul class="nav-links"></ul>
     </nav>
 
-    <section class="container" style="padding-top: 150px;">
-        <h2 class="section-title">Dec 31st Schedule</h2>
-        
+    <section class="container" style="padding-top: 120px;">
+        <h2 class="section-title">
+            <i class="far fa-calendar-alt" style="color: var(--accent); margin-right: 15px; font-size: 0.8em;"></i>
+            Dec 31st Schedule
+        </h2>
+
         <div class="glass-panel">
             <ul class="schedule-list">
                 <li class="schedule-item">
-                    <span class="schedule-time">6:00 PM</span>
+                    <span class="schedule-time">
+                        <i class="fas fa-pray" style="margin-right: 10px; font-size: 0.9em; opacity: 0.7;"></i>
+                        6:00 PM
+                    </span>
                     <span class="schedule-event">Prayer</span>
                 </li>
-                
+
                 <li class="schedule-item">
-                    <span class="schedule-time">6:15 PM</span>
+                    <span class="schedule-time">
+                        <i class="fas fa-child" style="margin-right: 10px; font-size: 0.9em; opacity: 0.7;"></i>
+                        6:15 PM
+                    </span>
                     <span class="schedule-event">Games for Children</span>
                 </li>
-                
+
                 <li class="schedule-item">
-                    <span class="schedule-time">9:30 PM</span>
+                    <span class="schedule-time">
+                        <i class="fas fa-music" style="margin-right: 10px; font-size: 0.9em; opacity: 0.7;"></i>
+                        9:30 PM
+                    </span>
                     <span class="schedule-event">Variety Entertainment</span>
                 </li>
-                
+
                 <li class="schedule-item">
-                    <span class="schedule-time">10:45 PM</span>
+                    <span class="schedule-time">
+                        <i class="fas fa-gamepad" style="margin-right: 10px; font-size: 0.9em; opacity: 0.7;"></i>
+                        10:45 PM
+                    </span>
                     <span class="schedule-event">Games for Men & Women</span>
                 </li>
-                
+
                 <li class="schedule-item">
-                    <span class="schedule-time">11:30 PM</span>
+                    <span class="schedule-time">
+                        <i class="fas fa-award" style="margin-right: 10px; font-size: 0.9em; opacity: 0.7;"></i>
+                        11:30 PM
+                    </span>
                     <span class="schedule-event">Guest Speech & Prize Distribution</span>
                 </li>
-                
+
                 <li class="schedule-item" style="border-bottom: none;">
-                    <span class="schedule-time">12:00 AM</span>
-                    <span class="schedule-event" style="color: white; text-shadow: 0 0 10px rgba(255,255,255,0.5);">Welcome New Year 2026</span>
+                    <span class="schedule-time" style="color: white; text-shadow: 0 0 15px rgba(255,255,255,0.5);">
+                        <i class="fas fa-star" style="margin-right: 10px; font-size: 0.9em;"></i>
+                        12:00 AM
+                    </span>
+                    <span class="schedule-event"
+                        style="color: white; font-weight: 600; text-shadow: 0 0 20px rgba(255,255,255,0.5);">
+                        🎉 Welcome New Year 2026 🎉
+                    </span>
                 </li>
             </ul>
         </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="register.html" class="btn-highlight"
+                style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px;">
+                <i class="fas fa-user-plus"></i>
+                Join the Celebration
+            </a>
+        </div>
     </section>
 
-    <footer style="text-align: center; padding: 40px; color: #444; font-size: 0.8rem;">
+    <footer style="text-align: center; padding: 40px; color: rgba(255,255,255,0.25); font-size: 0.8rem;">
         <p>&copy; 2026 Celebration Committee</p>
     </footer>
-    
+
     <script src="script.js"></script>
 </body>
+
 </html>
